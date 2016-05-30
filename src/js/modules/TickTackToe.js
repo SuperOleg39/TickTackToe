@@ -3,17 +3,20 @@
 import { Item }  		from './Item'
 import { Board } 		from './Board'
 import { MainMenu } from './MainMenu'
+import { AI } 			from './AI'
 
 export class TickTackToe {
 
 	constructor( limit ) {
 		this.items = [];
-		this.types = [ 'noughts', 'toe' ];
+		this.types = ['noughts', 'toe'];
 		this.turn  = 'noughts';
 		this.limit = limit;
-		this.board = new Board( this.limit );
-		this.mainMenu = new MainMenu( 'main-menu', 'open-menu' );
-		this.maxItemOneType = Math.ceil( this.limit * this.limit / 2 );
+		this.board = new Board(this.limit);
+		this.mainMenu   = new MainMenu('main-menu', 'open-menu');
+		this.bot 			  = new AI(this.limit);
+		this.isVersusAi = false;
+		this.maxItemOneType = Math.ceil(this.limit * this.limit / 2);
 
 		this.initGame();
 	}
@@ -35,6 +38,13 @@ export class TickTackToe {
 			} else {
 				this.turn = 'noughts';
 			}
+
+			if (this.isVersusAi) {
+				setTimeout(function() {
+					this.sendStateToAI();
+					this.bot.getAction(this.addItem.bind(this));
+				}.bind(this), 500)
+			}
 		}
 	}
 
@@ -48,17 +58,18 @@ export class TickTackToe {
 				if ( !this.classList.contains( self.turn )
 					 && item.item === 'empty' )
 				{
-					item.item = self.turn;
-					this.classList.add( self.turn )
-					self.addItem( position )
+					self.addItem(position, i)
 				}
 			});
 		});
 	}
 
-	addItem( position ) {
+	addItem(position, index) {
 		if ( this.getItemCount( this.turn ) < this.maxItemOneType ) {
 			const item = new Item( this.turn, position.x, position.y );
+
+			this.board.cells[index].item = this.turn;
+			this.board.cells[index].node.classList.add(this.turn);
 
 			this.items.push( item );
 			this.changeTurn();
@@ -84,6 +95,7 @@ export class TickTackToe {
 
 	resetGame() {
 		this.items = [];
+		this.turn  = 'noughts';
 
 		this.board.cells.forEach(function( item, i ) {
 			item.item = 'empty';
@@ -137,8 +149,32 @@ export class TickTackToe {
 		return false;
 	}
 
+	gameVersusAI() {
+		this.resetGame();
+		this.isVersusAi = true;
+	}
+
+	sendStateToAI() {
+		let state = [];
+		let count = 0;
+
+		for ( let i = 0; i < this.limit; i++ ) {
+			state[i] = [];
+
+			for ( let j = 0; j < this.limit; j++ ) {
+				state[i].push( this.board.cells[ count ] );
+				count++;
+			}
+		}
+
+		this.bot.getState(state);
+	}
+
 	createMainMenu() {
-		console.log(this.mainMenu)
 		this.mainMenu.addActionToMenu('Новая игра', this.resetGame.bind(this));
+
+		this.mainMenu.addActionToMenu('Против компьютера', this.gameVersusAI.bind(this));
+
+		this.mainMenu.addActionToMenu('Hot seat', this.resetGame.bind(this));
 	}
 }

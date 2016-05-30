@@ -2,11 +2,12 @@
 
 export class Cell {
 
-	constructor( position, limit ) {
+	constructor( position, limit, id ) {
 		this.item  = 'empty';
 		this.node  = {};
 		this.x 		 = position.x;
 		this.y 		 = position.y;
+		this.id 	 = id;
 		this.limit = limit;
 
 		this.initNode();

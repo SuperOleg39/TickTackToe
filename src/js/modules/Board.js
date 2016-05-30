@@ -14,13 +14,15 @@ export class Board {
 
 	initCells() {
 		let position = {};
+		let id = 0;
 
 		for ( let i = 0; i < this.limit; i++ ) {
 			position.x = i;
 			for ( let j = 0; j < this.limit; j++ ) {
 				position.y = j;
 
-				const cell = new Cell( position, this.limit );
+				const cell = new Cell( position, this.limit, id );
+				id++;
 
 				this.cells.push( cell );
 			}
