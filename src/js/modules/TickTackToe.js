@@ -1,7 +1,8 @@
 'use strict!';
 
-import { Item } from './Item'
-import { Board } from './Board'
+import { Item }  		from './Item'
+import { Board } 		from './Board'
+import { MainMenu } from './MainMenu'
 
 export class TickTackToe {
 
@@ -11,6 +12,7 @@ export class TickTackToe {
 		this.turn  = 'noughts';
 		this.limit = limit;
 		this.board = new Board( this.limit );
+		this.mainMenu = new MainMenu( 'main-menu', 'open-menu' );
 		this.maxItemOneType = Math.ceil( this.limit * this.limit / 2 );
 
 		this.initGame();
@@ -20,6 +22,7 @@ export class TickTackToe {
 		document.body.appendChild( this.board.node );
 
 		this.addEventsToCells();
+		this.createMainMenu();
 	}
 
 	changeTurn() {
@@ -90,8 +93,13 @@ export class TickTackToe {
 
 	checkGameStatus( type ) {
 		let result    = [];
-		let winstreak = [];
 		let count  	  = 0;
+		let winstreak = {
+			x 		: [],
+			y 		: [],
+			diagX : [],
+			diagY : []
+		};
 
 		for ( let i = 0; i < this.limit; i++ ) {
 			result[i] = [];
@@ -106,56 +114,31 @@ export class TickTackToe {
   		return element.item === type;
 		}
 
-		for ( let i = 0; i < this.limit; i++ ) {
-			winstreak = [];
+		for ( let i = 0, k = this.limit - 1; i < this.limit; i++, k-- ) {
+			winstreak.x = [];
+			winstreak.y = [];
+			winstreak.diagX.push( result[i][i] );
+			winstreak.diagY.push( result[k][i] );
 
 			for ( let j = 0; j < this.limit; j++ ) {
-				winstreak.push( result[i][j] );
+				winstreak.x.push( result[i][j] );
+				winstreak.y.push( result[j][i] );
 
-				if ( winstreak.every( isNoughtsOrToe )
-					 && winstreak.length === this.limit )
+				if ( winstreak.x.every( isNoughtsOrToe ) && winstreak.x.length === this.limit
+					 || winstreak.y.every( isNoughtsOrToe ) && winstreak.y.length === this.limit
+	 				 || winstreak.diagX.every( isNoughtsOrToe ) && winstreak.diagX.length === this.limit
+	 				 || winstreak.diagY.every( isNoughtsOrToe ) && winstreak.diagY.length === this.limit )
 				{
 					return true;
 				}
-			}
-		}
-
-		for ( let i = 0; i < this.limit; i++ ) {
-			winstreak = [ ];
-			for ( let j = 0; j < this.limit; j++ ) {
-				winstreak.push( result[j][i] );
-
-				if ( winstreak.every( isNoughtsOrToe )
-					 && winstreak.length === this.limit )
-				{
-					return true;
-				}
-			}
-		}
-
-		winstreak = [ ];
-		for ( let i = 0; i < this.limit; i++ ) {
-			winstreak.push( result[i][i] );
-
-			if ( winstreak.every( isNoughtsOrToe )
-				 && winstreak.length === this.limit )
-			{
-				return true;
-			}
-		}
-
-		winstreak = [ ];
-		for ( let i = this.limit - 1, j = 0; i >= 0; i--, j++ ) {
-			winstreak.push( result[i][j] );
-
-			if ( winstreak.every( isNoughtsOrToe )
-				 && winstreak.length === this.limit )
-			{
-				return true;
 			}
 		}
 
 		return false;
 	}
 
+	createMainMenu() {
+		console.log(this.mainMenu)
+		this.mainMenu.addActionToMenu('Новая игра', this.resetGame.bind(this));
+	}
 }

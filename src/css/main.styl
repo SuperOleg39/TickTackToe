@@ -24,9 +24,37 @@ body
 		height 200px
 		border 1px solid blue
 		&.noughts
-			background-color gray
+			background url(../img/nought.png) center no-repeat
+			background-size cover
 		&.toe
-			background-color black
+			background url(../img/cross.png) center no-repeat
+			background-size cover
+
+#open-menu
+	padding 5px 10px
+	background-color teal
+	color white
+	display inline-block
+	cursor pointer
+
+#main-menu
+	color: white
+	padding: 5px
+	min-height: 200px
+	min-width: 150px
+	background-color: teal
+	position: absolute
+	left: 8px
+	top: 40px
+	ul
+		list-style: none
+		margin: 0
+		padding: 0
+	li
+		width: 100%
+		line-height: 20px
+		text-align: center
+		cursor: pointer
 
 
 @import "pages/admin-page.styl"
